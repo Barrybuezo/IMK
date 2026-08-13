@@ -1,4 +1,31 @@
 package com.example.imk.domain.usecase
 
-class EditProductUseCase {
+import com.example.imk.domain.model.ProductResult
+import com.example.imk.domain.repository.ProductRepository
+
+class EditProductUseCase(private val productRepository: ProductRepository) {
+    suspend operator fun invoke(
+        id: Int,
+        name: String,
+        stock: Int,
+        price: Double,
+        photoUri: String?
+    ): ProductResult {
+        //Validación para nombre obligatorio
+        if (name.isBlank()) {
+            return ProductResult.EmptyInformation
+        }
+        //Validación para stock obligatorio y que no sea negativo
+        if (stock < 0) {
+            return ProductResult.InvalidInformation("El stock no debe ser negativo")
+        }
+        //Validación para precio obligatorio y mayor a 0
+        if (price <= 0.0) {
+            return ProductResult.InvalidInformation("El precio debe ser mayor a 0")
+        }
+
+        //Si cumple con todas las validaciones entonces se guarda el producto
+        productRepository.edit(id,name, stock, price, photoUri)
+        return ProductResult.Success
+    }
 }
