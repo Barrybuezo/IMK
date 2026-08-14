@@ -51,4 +51,6 @@ class ProductRepositoryImpl(private val productDao: ProductDao) : ProductReposit
     override suspend fun delete(id: Int) {
         productDao.delete(id)
     }
+
+    override suspend fun getProductById(id: Int) = productDao.getProductById(id)?.toDomain()
 }
