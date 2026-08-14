@@ -49,10 +49,20 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
+
+
     //room
     val room_version = "2.8.4"
-    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-runtime:${room_version}")
     ksp("androidx.room:room-compiler:$room_version")
+
+    //di
+    val koin_version = "4.2.2"
+    implementation(platform("io.insert-koin:koin-bom:$koin_version"))
+    implementation("io.insert-koin:koin-compose")
+    implementation("io.insert-koin:koin-compose-viewmodel")
+    implementation("io.insert-koin:koin-compose-viewmodel-navigation")
+    implementation("io.insert-koin:koin-compose-navigation3")
 
     //testing
     testImplementation(libs.junit)

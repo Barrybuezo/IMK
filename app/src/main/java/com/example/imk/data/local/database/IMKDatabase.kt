@@ -8,5 +8,5 @@ import com.example.imk.data.local.entity.ProductEntity
 //Biblioteca
 @Database(entities = [ProductEntity::class], version = 1)//Crea este archivo físico en el teléfono, mete estos archiveros adentro
 abstract class IMKDatabase : RoomDatabase(){
-    abstract fun productDao() : ProductDao //Si alguien quiere buscar algo, pásale a este bibliotecario.
+    abstract fun productDao() : ProductDao //Si alguien quiere buscar algo, pásale a este bibliotecario
 }
