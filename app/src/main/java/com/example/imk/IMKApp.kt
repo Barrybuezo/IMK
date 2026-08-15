@@ -3,6 +3,7 @@ package com.example.imk
 import android.app.Application
 import com.example.imk.di.appDataModule
 import com.example.imk.di.appDomainModule
+import com.example.imk.di.appUiModule
 import com.example.imk.di.roomModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -18,7 +19,8 @@ class IMKApp : Application() {
             modules(
                 roomModule,
                 appDataModule,
-                appDomainModule
+                appDomainModule,
+                appUiModule
             ) //Entregamos nuestros manuales de instrucciones
         }
     }

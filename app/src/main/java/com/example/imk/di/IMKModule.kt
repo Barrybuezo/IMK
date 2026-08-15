@@ -7,17 +7,22 @@ import com.example.imk.domain.repository.ProductRepository
 import com.example.imk.domain.usecase.AddProductUseCase
 import com.example.imk.domain.usecase.DeleteProductUseCase
 import com.example.imk.domain.usecase.EditProductUseCase
+import com.example.imk.domain.usecase.GetProductByIdUseCase
 import com.example.imk.domain.usecase.GetProductsUseCase
 import com.example.imk.domain.usecase.SearchProductUseCase
+import com.example.imk.ui.inventory.InventoryViewModel
+import com.example.imk.ui.product_detail.ProductDetailViewModel
+import com.example.imk.ui.product_form.ProductFormViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 //Manual de instrucciones
 private const val IMK_DATABASE = "imk_database" //Buena practica de programación
-
+//database
 val roomModule = module {
     single {
         Room.databaseBuilder( //Crear la base de datos
@@ -30,7 +35,7 @@ val roomModule = module {
 
     single { get<IMKDatabase>().productDao() } //Extrae el DAO de la base de datos
 }
-
+//reposiroty
 val appDataModule = module {
     singleOf(::ProductRepositoryImpl) { bind<ProductRepository>() } //Para que los casos de uso pueden trabajar con IMPL
 }
@@ -42,4 +47,14 @@ val appDomainModule = module {
     factoryOf(::EditProductUseCase)
     factoryOf(::DeleteProductUseCase)
     factoryOf(::SearchProductUseCase)
+    factoryOf(::GetProductByIdUseCase)
+}
+
+//viewmodels
+
+val appUiModule = module {
+    viewModelOf(::ProductFormViewModel)
+    viewModelOf(::InventoryViewModel)
+    viewModelOf(::ProductDetailViewModel)
+
 }

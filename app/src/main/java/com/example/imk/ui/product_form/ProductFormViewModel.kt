@@ -1,4 +1,4 @@
-package com.example.imk.ui.theme.product_form
+package com.example.imk.ui.product_form
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

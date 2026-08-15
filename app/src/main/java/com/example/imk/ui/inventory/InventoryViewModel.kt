@@ -1,4 +1,4 @@
-package com.example.imk.ui.theme.inventory
+package com.example.imk.ui.inventory
 
 import androidx.lifecycle.ViewModel
 import com.example.imk.data.local.database.IMKDatabase
