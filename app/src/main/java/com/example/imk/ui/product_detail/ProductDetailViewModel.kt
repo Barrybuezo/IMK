@@ -15,6 +15,7 @@ sealed class ProductDetailUiState {
     data object Loading : ProductDetailUiState()
     data class Success(val product: Product) : ProductDetailUiState()
     data object Deleted : ProductDetailUiState()
+    data class Error(val message : String) : ProductDetailUiState()
 }
 
 class ProductDetailViewModel(
@@ -30,6 +31,8 @@ class ProductDetailViewModel(
 
             if(productObtained != null){
                 _uiState.value = ProductDetailUiState.Success(productObtained)
+            }else{
+                _uiState.value = ProductDetailUiState.Error("No se encontró el producto")
             }
         }
     }

@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.imk.ui.inventory.InventoryScreen
 import com.example.imk.ui.theme.IMKTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,6 +21,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             IMKTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    InventoryScreen()
                 }
             }
         }

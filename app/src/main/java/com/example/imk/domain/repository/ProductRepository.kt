@@ -1,6 +1,5 @@
 package com.example.imk.domain.repository
 
-import com.example.imk.data.local.entity.ProductEntity
 import com.example.imk.domain.model.Product
 import kotlinx.coroutines.flow.Flow
 

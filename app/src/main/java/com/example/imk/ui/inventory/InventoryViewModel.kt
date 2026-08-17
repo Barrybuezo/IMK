@@ -1,13 +1,17 @@
 package com.example.imk.ui.inventory
 
 import androidx.lifecycle.ViewModel
-import com.example.imk.data.local.database.IMKDatabase
+import androidx.lifecycle.viewModelScope
 import com.example.imk.domain.model.Product
 import com.example.imk.domain.usecase.GetProductsUseCase
 import com.example.imk.domain.usecase.SearchProductUseCase
-import kotlinx.coroutines.flow.Flow
+import com.example.imk.ui.product_detail.ProductDetailUiState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 
 class InventoryViewModel(
     private val viewProductsUseCase: GetProductsUseCase,
@@ -21,12 +25,19 @@ class InventoryViewModel(
         queryFlow.value = query
     }
 
-    val productsFlow: Flow<List<Product>> =
+    // Cambio de Flow a StateFlow
+    val productsFlow: StateFlow<List<Product>> =
         queryFlow.flatMapLatest { query ->
             if (query.isBlank()) {
                 viewProductsUseCase() //Muestra todo si la barra de busqueda está vacia
             } else {
                 searchProductsUseCase(query) //Muestra los productos filtrados al buscar
             }
-        }
+        }.stateIn(
+            scope = viewModelScope,
+            //Observa durante 5 segundos para sobrevivir a cambios de estados como rotaciones y no tener cargar todo desde 0
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList() // Empieza con una lista vacía mientras carga de la base de datos
+        )
+
 }

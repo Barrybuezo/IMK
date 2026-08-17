@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.devtools.ksp")
 }
 
@@ -43,13 +44,19 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.core)
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
-
+    //Navigation
+    val nav3Version = "1.1.4"
+    implementation("androidx.navigation3:navigation3-runtime:$nav3Version")
+    implementation("androidx.navigation3:navigation3-ui:$nav3Version")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json: 1.11.0")
 
     //room
     val room_version = "2.8.4"
@@ -58,7 +65,7 @@ dependencies {
 
     //di
     val koin_version = "4.2.2"
-    implementation(platform("io.insert-koin:koin-bom:$koin_version"))
+    implementation(platform ("io.insert-koin:koin-bom:$koin_version"))
     implementation("io.insert-koin:koin-compose")
     implementation("io.insert-koin:koin-compose-viewmodel")
     implementation("io.insert-koin:koin-compose-viewmodel-navigation")
