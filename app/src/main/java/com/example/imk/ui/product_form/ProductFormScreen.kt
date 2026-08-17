@@ -29,7 +29,6 @@ import com.example.imk.core.IMKText
 import com.example.imk.core.IMKTextField
 import org.koin.compose.viewmodel.koinViewModel
 
-
 @Composable
 fun ProductFormScreen(
     productId: Int?, // null = crear, con valor = editar
@@ -70,7 +69,7 @@ fun ProductFormScreen(
         when (val state = uiState) {
             is ProductFormUiState.Success -> onFormSuccess()
             is ProductFormUiState.Error -> snackbarHostState.showSnackbar(state.message)
-            else -> Unit //no entiendo para que es esto
+            else -> Unit
         }
     }
     Scaffold(
