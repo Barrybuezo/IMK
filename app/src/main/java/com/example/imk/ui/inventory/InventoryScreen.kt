@@ -30,14 +30,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.imk.R
-import com.example.imk.core.IMKText
-import com.example.imk.core.IMKTextField
+import com.example.imk.core.composable.IMKText
+import com.example.imk.core.composable.IMKTextField
 import com.example.imk.domain.model.Product
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun InventoryScreen(
     viewModel: InventoryViewModel = koinViewModel(),
+    onNavigateForm: () -> Unit,
+    onNavigateDetail: (Int) -> Unit
 ) {
     val products by viewModel.productsFlow.collectAsStateWithLifecycle()
     var searchQuery by rememberSaveable { mutableStateOf("") }
@@ -49,8 +51,8 @@ fun InventoryScreen(
             searchQuery = newValue
             viewModel.onSearchQueryChanged(newValue) //Se lo manda al ViewModel
         },
-        onProductClick = { }, //navegacion pendiente
-        onAddProductClick = { } //navegacion pendiente
+        onProductClick = { id -> onNavigateDetail(id) },
+        onAddProductClick = { onNavigateForm()}
     )
 }
 
@@ -88,17 +90,17 @@ fun InventoryContent(
             Spacer(modifier = Modifier.height(20.dp))
 
             if (products.isEmpty()) {
-                    Spacer(modifier = Modifier.height(130.dp))
-                    Image(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 50.dp),
-                        painter = painterResource(R.drawable.sin_productos_logo),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    IMKText(text = "No hay productos agregados")
+                Spacer(modifier = Modifier.height(130.dp))
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 50.dp),
+                    painter = painterResource(R.drawable.sin_productos_logo),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                IMKText(text = "No hay productos agregados")
             } else {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp)

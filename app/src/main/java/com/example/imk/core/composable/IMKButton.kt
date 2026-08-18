@@ -1,4 +1,4 @@
-package com.example.imk.core
+package com.example.imk.core.composable
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

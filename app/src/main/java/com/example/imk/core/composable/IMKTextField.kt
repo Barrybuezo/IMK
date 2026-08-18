@@ -1,4 +1,4 @@
-package com.example.imk.core
+package com.example.imk.core.composable
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme

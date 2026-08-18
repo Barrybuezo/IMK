@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -20,10 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.imk.core.IMKButton
-import com.example.imk.core.IMKText
+import com.example.imk.core.composable.IMKButton
+import com.example.imk.core.composable.IMKText
 import com.example.imk.domain.model.Product
-import com.example.imk.ui.product_form.ProductFormViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -45,10 +43,9 @@ fun ProductDetailScreen(
         when (val state = uiState) {
             is ProductDetailUiState.Error -> snackHostState.showSnackbar(state.message)
             is ProductDetailUiState.Deleted -> onProductDeleted()
-            is ProductDetailUiState.Success -> Unit //Por el momento en lo que se piensa que hacer
+            is ProductDetailUiState.Success -> Unit //No hace nada para que en scaffold se pueda dibujar lo necesario
             is ProductDetailUiState.Loading -> Unit
-            else -> Unit
-        }
+        } //No es necesario Else si se abarcan todos los casos
     }
 
     Scaffold(
@@ -59,16 +56,17 @@ fun ProductDetailScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            Modifier.align(Alignment.Center)
             when (val state = uiState) {
                 is ProductDetailUiState.Loading -> {
-                    CircularProgressIndicator() //¿Para que es la carga con valor fijo?
+                    CircularProgressIndicator() //Circulo de carga
                 }
 
                 is ProductDetailUiState.Success -> {
                     ProductDetailContent(
                         product = state.product, //Sacar el producto real del estado
-                        onEditClick = {onEditClick(state.product.id)}, //Se pasa el id para navegar
-                        onDeleteClick = {viewModel.delete(state.product.id)} //Pasa ID para borrar
+                        onEditClick = { onEditClick(state.product.id) }, //Se pasa el id para navegar
+                        onDeleteClick = { viewModel.delete(state.product.id) } //Pasa ID para borrar
                     )
                 }
 

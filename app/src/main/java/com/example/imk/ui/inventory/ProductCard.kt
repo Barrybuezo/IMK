@@ -11,7 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.imk.core.IMKText
+import com.example.imk.core.composable.IMKText
 import com.example.imk.domain.model.Product
 
 @Composable

@@ -11,12 +11,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -24,9 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.imk.core.IMKButton
-import com.example.imk.core.IMKText
-import com.example.imk.core.IMKTextField
+import com.example.imk.core.composable.IMKButton
+import com.example.imk.core.composable.IMKText
+import com.example.imk.core.composable.IMKTextField
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -34,6 +35,7 @@ fun ProductFormScreen(
     productId: Int?, // null = crear, con valor = editar
     viewModel: ProductFormViewModel = koinViewModel(),
     onFormSuccess: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val loadedProduct by viewModel.loadedProduct.collectAsStateWithLifecycle()
@@ -42,6 +44,7 @@ fun ProductFormScreen(
     var stock by rememberSaveable { mutableStateOf("") }
     var price by rememberSaveable { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
 
 // Esto se ejecuta UNA vez cuando la pantalla aparece o cuando productId cambia
@@ -67,8 +70,14 @@ fun ProductFormScreen(
 //            ProductFormUiState.Error(snackbarHostState.showSnackbar(state.message))
 //        }
         when (val state = uiState) {
-            is ProductFormUiState.Success -> onFormSuccess()
-            is ProductFormUiState.Error -> snackbarHostState.showSnackbar(state.message)
+            is ProductFormUiState.Success -> {
+                viewModel.resetState() //Limpiar
+                onFormSuccess() //navegar
+            }
+            is ProductFormUiState.Error -> {
+                snackbarHostState.showSnackbar(state.message)
+                viewModel.resetState() //Limpiar para que no se repita al girar la pantalla
+            }
             else -> Unit
         }
     }
@@ -96,9 +105,12 @@ fun ProductFormScreen(
                     } else {
                         viewModel.addProduct(name, stockValue, priceValue, null)
                     }
+                }else{
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar("Campos obligatorios")
+                    }
                 }
-                // si son null, no pasa nada — todavía no hay feedback visual al usuario, eso es una mejora pendiente
-            }
+            },
         )
     }
 
