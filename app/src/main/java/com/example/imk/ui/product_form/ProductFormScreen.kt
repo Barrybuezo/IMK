@@ -1,5 +1,8 @@
 package com.example.imk.ui.product_form
 
+import android.content.Context
+import android.net.Uri
+import android.os.Environment
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,22 +27,28 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.imk.core.composable.IMKButton
 import com.example.imk.core.composable.IMKText
 import com.example.imk.core.composable.IMKTextField
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import java.io.File
+import kotlin.contracts.contract
 
 @Composable
 fun ProductFormScreen(
     productId: Int?, // null = crear, con valor = editar
     viewModel: ProductFormViewModel = koinViewModel(),
     onFormSuccess: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val loadedProduct by viewModel.loadedProduct.collectAsStateWithLifecycle()
     // Variables locales para los campos del formulario, deben estar vacias para crear y, para editar(solo al princpio)
@@ -50,11 +59,30 @@ fun ProductFormScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
+    //Cámara
+    val context = LocalContext.current
+    var tempCameraUri by remember { mutableStateOf<Uri?>(null) }
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = { success ->
+            if(success){
+                currentPhotoUri = tempCameraUri.toString()
+                println("Foto tomada y guardada en: $currentPhotoUri")
+            }else{
+                println("La foto no ha sido tomada")
+            }
+        }
+    )
+
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
             if (isGranted) {
-                println("Permiso concedido")
+                //Crear y guardar archivo temporal
+                val newUri = createTempPictureUri(context)
+                tempCameraUri = newUri
+                cameraLauncher.launch(newUri)
             } else {
                 println("Permiso denegado")
             }
@@ -111,6 +139,9 @@ fun ProductFormScreen(
             else -> Unit
         }
     }
+
+
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -147,13 +178,12 @@ fun ProductFormScreen(
                     }
                 }
             },
-            onTestPermissionClick = { permissionLauncher.launch(android.Manifest.permission.CAMERA) },
+            onCameraClick= { permissionLauncher.launch(android.Manifest.permission.CAMERA) },
             onGalleryClick = { galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }
         )
     }
 
 }
-
 
 @Composable
 fun ProductFormContent(
@@ -166,7 +196,7 @@ fun ProductFormContent(
     onPriceChanged: (String) -> Unit,
     isEditMode: Boolean,
     onSaveClick: () -> Unit,
-    onTestPermissionClick: () -> Unit,
+    onCameraClick: () -> Unit,
     onGalleryClick: () -> Unit
 ) {
     Column(
@@ -211,8 +241,8 @@ fun ProductFormContent(
 
         Spacer(modifier = Modifier.weight(1f))
         IMKButton(
-            text = "Permiso",
-            onclick = onTestPermissionClick
+            text = "Tomar foto",
+            onclick = onCameraClick
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -229,7 +259,11 @@ fun ProductFormContent(
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         )
-
-
     }
+}
+
+fun createTempPictureUri(context: Context): Uri{
+    val tempFile = File.createTempFile("IMG_", ".jpg", context.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+
+    return FileProvider.getUriForFile(context, "com.example.imk.fileprovider", tempFile)
 }
