@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.imk.core.navigation.AppNavHost
+import com.example.imk.core.navigation.NavRoutes
 import com.example.imk.ui.inventory.InventoryScreen
 import com.example.imk.ui.theme.IMKTheme
 
@@ -20,9 +22,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             IMKTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    InventoryScreen()
-                }
+                AppNavHost(
+                    startDestination = NavRoutes.Inventory
+                )
             }
         }
     }

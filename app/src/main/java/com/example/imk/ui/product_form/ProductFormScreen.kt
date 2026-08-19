@@ -1,5 +1,8 @@
 package com.example.imk.ui.product_form
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,8 +46,32 @@ fun ProductFormScreen(
     var name by rememberSaveable { mutableStateOf("") }
     var stock by rememberSaveable { mutableStateOf("") }
     var price by rememberSaveable { mutableStateOf("") }
+    var currentPhotoUri by rememberSaveable { mutableStateOf<String?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                println("Permiso concedido")
+            } else {
+                println("Permiso denegado")
+            }
+        }
+    )
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            if (uri != null) {
+                currentPhotoUri = uri.toString()
+                println("Foto guardada: $currentPhotoUri")
+            } else {
+                println("No se seleccionó ninguna foto")
+            }
+        }
+    )
 
 
 // Esto se ejecuta UNA vez cuando la pantalla aparece o cuando productId cambia
@@ -60,6 +87,7 @@ fun ProductFormScreen(
             name = product.name
             stock = product.stock.toString()
             price = product.price.toString()//TextField trabaja solo con String
+            currentPhotoUri = product.photoUri.toString()
         }
     }
 
@@ -74,10 +102,12 @@ fun ProductFormScreen(
                 viewModel.resetState() //Limpiar
                 onFormSuccess() //navegar
             }
+
             is ProductFormUiState.Error -> {
                 snackbarHostState.showSnackbar(state.message)
                 viewModel.resetState() //Limpiar para que no se repita al girar la pantalla
             }
+
             else -> Unit
         }
     }
@@ -101,16 +131,24 @@ fun ProductFormScreen(
 
                 if (stockValue != null && priceValue != null) {
                     if (productId != null) {
-                        viewModel.editProduct(productId, name, stockValue, priceValue, loadedProduct?.photoUri)
+                        viewModel.editProduct(
+                            productId,
+                            name,
+                            stockValue,
+                            priceValue,
+                            currentPhotoUri
+                        )
                     } else {
-                        viewModel.addProduct(name, stockValue, priceValue, null)
+                        viewModel.addProduct(name, stockValue, priceValue, currentPhotoUri)
                     }
-                }else{
+                } else {
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar("Campos obligatorios")
                     }
                 }
             },
+            onTestPermissionClick = { permissionLauncher.launch(android.Manifest.permission.CAMERA) },
+            onGalleryClick = { galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }
         )
     }
 
@@ -127,7 +165,9 @@ fun ProductFormContent(
     price: String,
     onPriceChanged: (String) -> Unit,
     isEditMode: Boolean,
-    onSaveClick: () -> Unit
+    onSaveClick: () -> Unit,
+    onTestPermissionClick: () -> Unit,
+    onGalleryClick: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -171,11 +211,25 @@ fun ProductFormContent(
 
         Spacer(modifier = Modifier.weight(1f))
         IMKButton(
+            text = "Permiso",
+            onclick = onTestPermissionClick
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+        IMKButton(
+            text = "Escoger foto",
+            onclick = onGalleryClick
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+        IMKButton(
             text = if (isEditMode) "Actualizar Producto" else "Guardar Producto",
             onclick = onSaveClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         )
+
+
     }
 }

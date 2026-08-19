@@ -41,6 +41,9 @@ class ProductFormViewModel(
         }
     }
 
+    fun resetState() {
+        _uiState.value = ProductFormUiState.Idle
+    }
 
     fun addProduct(name: String, stock: Int, price: Double, photoUri: String?) {
         viewModelScope.launch {
