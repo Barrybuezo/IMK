@@ -67,6 +67,11 @@ class ProductFormViewModel(
                 }
         }
     }
+
+    //Para resetear los datos
+    fun resetForm(){
+        _loadedProduct.value = null
+    }
 }
 
 

@@ -105,17 +105,20 @@ fun ProductFormScreen(
 // Esto se ejecuta UNA vez cuando la pantalla aparece o cuando productId cambia
     LaunchedEffect(productId) {
         if (productId != null) {
-            viewModel.loadProduct(productId)
+            viewModel.loadProduct(productId) //Manda a editar
+        } else { //Manda a crear
+            viewModel.resetForm() //Para resetear los datos
         }
     }
 
-// Cuando loadedProduct llega con datos, se debe actualizar las variables locales
+    //Editar
+    // Cuando loadedProduct llega con datos, se debe actualizar las variables locales
     LaunchedEffect(loadedProduct) {
         loadedProduct?.let { product ->
             name = product.name
             stock = product.stock.toString()
             price = product.price.toString()//TextField trabaja solo con String
-            currentPhotoUri = product.photoUri.toString()
+            currentPhotoUri = product.photoUri
         }
     }
 
