@@ -65,10 +65,10 @@ fun ProductFormScreen(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
-            if(success){
+            if (success) {
                 currentPhotoUri = tempCameraUri.toString()
                 println("Foto tomada y guardada en: $currentPhotoUri")
-            }else{
+            } else {
                 println("La foto no ha sido tomada")
             }
         }
@@ -114,11 +114,17 @@ fun ProductFormScreen(
     //Editar
     // Cuando loadedProduct llega con datos, se debe actualizar las variables locales
     LaunchedEffect(loadedProduct) {
-        loadedProduct?.let { product ->
+        val product = loadedProduct
+        if (product != null) {
             name = product.name
             stock = product.stock.toString()
             price = product.price.toString()//TextField trabaja solo con String
             currentPhotoUri = product.photoUri
+        } else {
+            name = ""
+            stock = ""
+            price = ""
+            currentPhotoUri = null
         }
     }
 
@@ -181,7 +187,7 @@ fun ProductFormScreen(
                     }
                 }
             },
-            onCameraClick= { permissionLauncher.launch(android.Manifest.permission.CAMERA) },
+            onCameraClick = { permissionLauncher.launch(android.Manifest.permission.CAMERA) },
             onGalleryClick = { galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }
         )
     }
@@ -242,19 +248,19 @@ fun ProductFormContent(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(200.dp))
         IMKButton(
             text = "Tomar foto",
             onclick = onCameraClick
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(16.dp))
         IMKButton(
             text = "Escoger foto",
             onclick = onGalleryClick
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(16.dp))
         IMKButton(
             text = if (isEditMode) "Actualizar Producto" else "Guardar Producto",
             onclick = onSaveClick,
@@ -265,8 +271,12 @@ fun ProductFormContent(
     }
 }
 
-fun createTempPictureUri(context: Context): Uri{
-    val tempFile = File.createTempFile("IMG_", ".jpg", context.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+fun createTempPictureUri(context: Context): Uri {
+    val tempFile = File.createTempFile(
+        "IMG_",
+        ".jpg",
+        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    )
 
     return FileProvider.getUriForFile(context, "com.example.imk.fileprovider", tempFile)
 }

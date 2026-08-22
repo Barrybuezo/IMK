@@ -1,5 +1,6 @@
 package com.example.imk.ui.product_detail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -96,6 +97,7 @@ fun ProductDetailContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         IMKText(
